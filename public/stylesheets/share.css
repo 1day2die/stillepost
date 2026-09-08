@@ -58,3 +58,24 @@
     margin-bottom: 20px;
     text-decoration: underline;
 }
+
+.views-row {
+    margin-bottom: 10px;
+}
+
+.views-row label {
+    display: inline;
+    font-weight: normal;
+    margin-right: 8px;
+}
+
+.views-input {
+    width: 5em;
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+.views-note {
+    font-style: italic;
+    margin-top: 6px;
+}

@@ -30,5 +30,13 @@
 	"Sende via Threema": "Send via Threema",
 	"HOW-TO-TITLE": "How does it work?",
 	"HOW-TO-MESSAGE": "Paste your secret into the text box and create a link. Your entry is encrypted in your browser before anything is sent - the key becomes part of the link and never reaches the server. Send the link to the recipient. The recipient can access the entry within 100 days. After it has been accessed ONCE, the entry is deleted; every later access shows an error.",
-	"Nach dem Kopieren Eingabe leeren": "Clear the input after copying"
+	"Nach dem Kopieren Eingabe leeren": "Clear the input after copying",
+	"How many times may the link be opened?": "How many times may the link be opened?",
+	"Please enter a number between 1 and 20.": "Please enter a number between 1 and 20.",
+	"The link can be opened {n} times.": "The link can be opened {n} times.",
+	"This entry can be opened one more time after this one.": "After this access the entry can be opened one more time.",
+	"This entry can be opened {n} more times after this one.": "After this access the entry can be opened {n} more times.",
+	"This is the last access, the entry will be deleted.": "This is the last access, the entry will be deleted.",
+	"The entry can be opened one more time.": "The entry can be opened one more time.",
+	"The entry can be opened {n} more times.": "The entry can be opened {n} more times."
 }

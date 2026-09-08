@@ -12,12 +12,18 @@
 	var KEY_BYTES = 32;
 	var IV_BYTES = 12;
 	var MAX_MESSAGE_LENGTH = 4000;
+	var MAX_VIEWS = 20;
 
 	var app = document.getElementById('app');
 	if (!app) return;
 
 	function message(name) {
 		return app.getAttribute('data-msg-' + name) || name;
+	}
+
+	// picks the singular or the plural message and fills in the number
+	function countMessage(base, n) {
+		return message(base + (n === 1 ? '-one' : '-many')).replace('{n}', n);
 	}
 
 	function el(id) {
@@ -109,11 +115,11 @@
 		return app.getAttribute('data-api') + suffix;
 	}
 
-	async function apiCreate(ciphertext) {
+	async function apiCreate(ciphertext, views) {
 		var res = await fetch(apiUrl(''), {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ ciphertext: ciphertext })
+			body: JSON.stringify({ ciphertext: ciphertext, views: views })
 		});
 		if (!res.ok) throw new Error('create failed: ' + res.status);
 		return (await res.json()).id;
@@ -121,13 +127,14 @@
 
 	async function apiPeek(id) {
 		var res = await fetch(apiUrl('/' + id));
-		return res.ok;
+		if (!res.ok) return null;
+		return await res.json();
 	}
 
 	async function apiBurn(id) {
 		var res = await fetch(apiUrl('/' + id + '/burn'), { method: 'POST' });
 		if (!res.ok) return null;
-		return (await res.json()).ciphertext;
+		return await res.json();
 	}
 
 	/* ---------- the link ---------- */
@@ -181,13 +188,25 @@
 			if (!text) return;
 			if (text.length > MAX_MESSAGE_LENGTH) return fail(message('too-long'));
 
+			var views = parseInt(el('views').value, 10);
+			if (!(views >= 1 && views <= MAX_VIEWS)) return fail(message('invalid-views'));
+
 			button.disabled = true;
 			try {
 				var encrypted = await encrypt(text);
-				var id = await apiCreate(encrypted.ciphertext);
+				var id = await apiCreate(encrypted.ciphertext, views);
 
 				currentLink = buildLink(id, encrypted.key);
 				el('url').value = currentLink;
+
+				var note = el('views-note');
+				if (views > 1) {
+					note.textContent = message('link-views-many').replace('{n}', views);
+					show(note);
+				} else {
+					hide(note);
+				}
+
 				// the plain text has served its purpose, do not leave it on screen
 				input.value = '';
 				updateCounter();
@@ -263,8 +282,13 @@
 	function setUpRead(entry) {
 		var button = el('reveal-button');
 
-		apiPeek(entry.id).then(function (exists) {
-			if (!exists) return fail(message('no-entry'));
+		apiPeek(entry.id).then(function (info) {
+			if (!info) return fail(message('no-entry'));
+			// how many accesses are left once this one has been used up
+			var afterThis = info.remaining - 1;
+			el('reveal-note').textContent = afterThis > 0
+				? countMessage('views-left', afterThis)
+				: message('views-last');
 			show(el('reveal'));
 		}).catch(function () {
 			fail(message('no-entry'));
@@ -274,19 +298,25 @@
 			button.disabled = true;
 			hide(el('error'));
 			try {
-				var ciphertext = await apiBurn(entry.id);
-				if (ciphertext === null) {
+				var claimed = await apiBurn(entry.id);
+				if (claimed === null) {
 					fail(message('no-entry'));
 					return;
 				}
 
-				var plaintext = await decrypt(ciphertext, entry.key);
+				var plaintext = await decrypt(claimed.ciphertext, entry.key);
 
 				el('result-text').value = plaintext;
+				el('revealed-note').textContent = claimed.remaining > 0
+					? countMessage('revealed-left', claimed.remaining)
+					: message('deleted-now');
 				hide(el('reveal'));
 				show(el('revealed'));
-				// the entry is gone now, keep the key out of the address bar
-				dropFragment();
+
+				// Only drop the fragment when nothing is left to fetch. While the
+				// link still has accesses the key has to stay in the address bar,
+				// otherwise a reload would lose it.
+				if (claimed.remaining === 0) dropFragment();
 			} catch (e) {
 				fail(message('decrypt-failed'));
 			} finally {

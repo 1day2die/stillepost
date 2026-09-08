@@ -15,6 +15,8 @@ const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
 const MIN_CIPHERTEXT_LENGTH = 40;
 const MAX_CIPHERTEXT_LENGTH = 32 * 1024;
 const MAX_ID_ATTEMPTS = 5;
+// how often a single link may be opened at most
+const MAX_VIEWS = 20;
 // marks entries of the end to end encrypted scheme, see routes/legacy.js
 const SCHEME_VERSION = 2;
 
@@ -29,7 +31,8 @@ function generateUniqueId(attempt, callback) {
 }
 
 exports.create = function (req, res) {
-	const ciphertext = req.body ? req.body.ciphertext : undefined;
+	const body = req.body || {};
+	const ciphertext = body.ciphertext;
 
 	if (typeof ciphertext !== 'string'
 		|| ciphertext.length < MIN_CIPHERTEXT_LENGTH
@@ -38,18 +41,35 @@ exports.create = function (req, res) {
 		return res.status(400).json({ error: 'invalid_ciphertext' });
 	}
 
+	// how many times the link may be opened; a missing value keeps the old
+	// behaviour of a single view
+	const views = body.views === undefined ? 1 : body.views;
+	if (!Number.isInteger(views) || views < 1 || views > MAX_VIEWS) {
+		return res.status(400).json({ error: 'invalid_views' });
+	}
+
 	generateUniqueId(1, function (err, id) {
 		if (err) {
 			console.error('Could not generate an id:', err.message);
 			return res.status(500).json({ error: 'internal' });
 		}
-		app.nedb.insert({ key: id, timestamp: Date.now(), encrypted: ciphertext, v: SCHEME_VERSION }, function (err) {
+		// "remaining" counts down and is what the burn guard compares against;
+		// the number of accesses so far is threshold - remaining
+		const entry = {
+			key: id,
+			timestamp: Date.now(),
+			encrypted: ciphertext,
+			v: SCHEME_VERSION,
+			threshold: views,
+			remaining: views
+		};
+		app.nedb.insert(entry, function (err) {
 			if (err) {
 				console.error('Could not store the entry:', err.message);
 				return res.status(500).json({ error: 'internal' });
 			}
 			counter.countMessage();
-			res.status(201).json({ id });
+			res.status(201).json({ id, threshold: views });
 		});
 	});
 };
@@ -58,13 +78,13 @@ exports.peek = function (req, res) {
 	const id = req.params.id;
 	if (!ID_PATTERN.test(id)) return res.status(404).json({ error: 'not_found' });
 
-	app.nedb.findOne({ key: id, v: SCHEME_VERSION }, function (err, doc) {
+	app.nedb.findOne({ key: id, v: SCHEME_VERSION, remaining: { $gt: 0 } }, function (err, doc) {
 		if (err) {
 			console.error('Could not look up the entry:', err.message);
 			return res.status(500).json({ error: 'internal' });
 		}
 		if (!doc) return res.status(404).json({ error: 'not_found' });
-		res.json({ exists: true });
+		res.json({ exists: true, threshold: doc.threshold, remaining: doc.remaining });
 	});
 };
 
@@ -72,24 +92,40 @@ exports.burn = function (req, res) {
 	const id = req.params.id;
 	if (!ID_PATTERN.test(id)) return res.status(404).json({ error: 'not_found' });
 
-	app.nedb.findOne({ key: id, v: SCHEME_VERSION }, function (err, doc) {
-		if (err) {
-			console.error('Could not look up the entry:', err.message);
-			return res.status(500).json({ error: 'internal' });
-		}
-		if (!doc) return res.status(404).json({ error: 'not_found' });
-
-		// delete before handing anything out: nedb serialises its operations, so
-		// of two concurrent readers exactly one sees numRemoved === 1 and gets
-		// the ciphertext. The other one is told the entry is gone.
-		app.nedb.remove({ _id: doc._id }, {}, function (err, numRemoved) {
+	// One atomic step: only an entry that still has views left is decremented.
+	// nedb runs its operations one after another, so of several concurrent
+	// readers exactly as many succeed as there were views left - nobody can
+	// slip through by racing.
+	app.nedb.update(
+		{ key: id, v: SCHEME_VERSION, remaining: { $gt: 0 } },
+		{ $inc: { remaining: -1 } },
+		{ returnUpdatedDocs: true },
+		function (err, numAffected, doc) {
 			if (err) {
-				console.error('Could not remove the entry:', err.message);
+				console.error('Could not claim the entry:', err.message);
 				return res.status(500).json({ error: 'internal' });
 			}
-			if (numRemoved !== 1) return res.status(404).json({ error: 'not_found' });
-			app.nedb.compactDatafile();
-			res.json({ ciphertext: doc.encrypted });
-		});
-	});
+			if (numAffected !== 1 || !doc) return res.status(404).json({ error: 'not_found' });
+
+			const deliver = function () {
+				res.json({
+					ciphertext: doc.encrypted,
+					threshold: doc.threshold,
+					remaining: doc.remaining
+				});
+			};
+
+			// still views left, keep the entry
+			if (doc.remaining > 0) return deliver();
+
+			// last view: remove it. Should that fail, the entry stays behind with
+			// remaining === 0 and the guard above already makes it unreadable, so
+			// the reader can still be served and the cleanup job takes care of it.
+			app.nedb.remove({ _id: doc._id }, {}, function (err) {
+				if (err) console.error('Could not remove the used up entry:', err.message);
+				app.nedb.compactDatafile();
+				deliver();
+			});
+		}
+	);
 };

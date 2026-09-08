@@ -27,5 +27,13 @@
 	"Sende via Threema": "Sende via Threema",
 	"HOW-TO-TITLE": "Wie funktioniert’s?",
 	"HOW-TO-MESSAGE": "Füge den geheimen Eintrag in die Text-Box und erzeuge einen Link. Der Eintrag wird bereits im Browser verschlüsselt, bevor irgendetwas gesendet wird — der Schlüssel steckt im Link und erreicht den Server nie. Versende den Link. Der Empfänger kann den Eintrag innerhalb von 100 Tagen ansehen. Nachdem er EINMAL angesehen wurde, wird er gelöscht; jeder weitere Zugriff führt zu einer Fehlermeldung.",
-	"Nach dem Kopieren Eingabe leeren": "Nach dem Kopieren Eingabe leeren"
+	"Nach dem Kopieren Eingabe leeren": "Nach dem Kopieren Eingabe leeren",
+	"How many times may the link be opened?": "Wie oft darf der Link geöffnet werden?",
+	"Please enter a number between 1 and 20.": "Bitte eine Zahl zwischen 1 und 20 eingeben.",
+	"The link can be opened {n} times.": "Der Link kann {n} mal geöffnet werden.",
+	"This entry can be opened one more time after this one.": "Nach diesem Zugriff kann der Eintrag noch einmal geöffnet werden.",
+	"This entry can be opened {n} more times after this one.": "Nach diesem Zugriff kann der Eintrag noch {n} mal geöffnet werden.",
+	"This is the last access, the entry will be deleted.": "Dies ist der letzte Zugriff, der Eintrag wird danach gelöscht.",
+	"The entry can be opened one more time.": "Der Eintrag kann noch einmal geöffnet werden.",
+	"The entry can be opened {n} more times.": "Der Eintrag kann noch {n} mal geöffnet werden."
 }

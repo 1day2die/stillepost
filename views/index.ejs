@@ -50,7 +50,15 @@
          data-msg-create-failed="<%= __('Something went wrong. Please try again.') %>"
          data-msg-decrypt-failed="<%= __('The entry could not be decrypted. The link is incomplete or damaged.') %>"
          data-msg-too-long="<%= __('The entry is too long.') %>"
-         data-msg-crypto-unavailable="<%= __('This browser cannot encrypt. Please use an up to date browser over https.') %>">
+         data-msg-crypto-unavailable="<%= __('This browser cannot encrypt. Please use an up to date browser over https.') %>"
+         data-msg-invalid-views="<%= __('Please enter a number between 1 and 20.') %>"
+         data-msg-link-views-many="<%= __('The link can be opened {n} times.') %>"
+         data-msg-views-left-one="<%= __('This entry can be opened one more time after this one.') %>"
+         data-msg-views-left-many="<%= __('This entry can be opened {n} more times after this one.') %>"
+         data-msg-views-last="<%= __('This is the last access, the entry will be deleted.') %>"
+         data-msg-revealed-left-one="<%= __('The entry can be opened one more time.') %>"
+         data-msg-revealed-left-many="<%= __('The entry can be opened {n} more times.') %>"
+         data-msg-deleted-now="<%= __('Do not reload! Your entry has been deleted already.') %>">
 
         <noscript>
             <p><strong><%= __('This service needs JavaScript, because your entry is encrypted in your browser before it is sent.') %></strong></p>
@@ -65,12 +73,17 @@
                     <label for="secretUserMessage"><%= __('Text (password, secret, etc.):') %></label>
                     <textarea class="field" id="secretUserMessage" name="secretUserMessage"></textarea>
                     <div id="counter" class="counter"></div>
+                    <div class="views-row">
+                        <label for="views"><%= __('How many times may the link be opened?') %></label>
+                        <input type="number" id="views" name="views" value="1" min="1" max="20" step="1" class="views-input">
+                    </div>
                     <button type="submit" id="create-button"><%= __('Create link') %></button>
                 </div>
             </form>
 
             <div id="result" hidden>
                 <label for="url"><%= __('Text available only once by this URL:') %></label>
+                <p id="views-note" class="views-note" hidden></p>
                 <input class="wide" type="text" id="url" name="url" readonly/>
                 <div class="checkbox-label">
                     <input type="checkbox" id="copydelete" name="copydelete" value="true" checked>
@@ -87,14 +100,14 @@
         <!-- read an entry -->
         <section id="view-read" hidden>
             <div id="reveal" hidden>
-                <p><%= __('You can access the secret message now. Please note that the message will be deleted!') %></p>
+                <p id="reveal-note"><%= __('You can access the secret message now. Please note that the message will be deleted!') %></p>
                 <button type="button" id="reveal-button"><%= __('Show secret') %></button>
             </div>
 
             <div id="revealed" hidden>
                 <label for="result-text"><%= __('The entry:') %></label>
                 <textarea class="field" id="result-text" readonly></textarea>
-                <p><em><%= __('Do not reload! Your entry has been deleted already.') %></em></p>
+                <p id="revealed-note"><em><%= __('Do not reload! Your entry has been deleted already.') %></em></p>
                 <a href="./"><button type="button"><%= __('Create new link') %></button></a>
             </div>
         </section>
