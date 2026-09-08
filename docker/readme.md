@@ -41,6 +41,11 @@ Apache config for sub paths
     </Location>
 ---
 
-Note: the access URL currently carries the decryption key in the query string,
-so the reverse proxy will log it. Until that is changed, exclude the request
-line from the access log or disable logging for this vhost.
+Note: the current access URL keeps the key in the fragment, which is never sent
+to the server, so nothing secret reaches the access log. Links created before
+that change carry their key in the query string and are still valid for 100
+days - until they have expired, keep the query string out of the access log:
+
+    log_format r2b '$remote_addr - $remote_user [$time_local] '
+                   '"$request_method $uri $server_protocol" '
+                   '$status $body_bytes_sent "$http_referer" "$http_user_agent"';

@@ -19,8 +19,17 @@
 	"The entry:": "Der Eintrag:",
 	"Do not reload! Your entry has been deleted already.": "Bitte die Seite nicht neu laden! Der Eintrag wurde gelöscht.",
 	"You can access the secret message now. Please note that the message will be deleted!": "Sie können nun auf den Eintrag zugreifen. Bitte beachten Sie, dass der Eintrag dadurch gelöscht wird.",
-	"Show secret": "Show secret",
+	"Show secret": "Zeige die Nachricht",
 	"copy": "Kopieren",
 	"The entry is too long.": "Der Eintrag ist zu lang.",
-	"Something went wrong. Please try again.": "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
+	"Something went wrong. Please try again.": "Es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+	"The entry could not be decrypted. The link is incomplete or damaged.": "Der Eintrag konnte nicht entschlüsselt werden. Der Link ist unvollständig oder beschädigt.",
+	"This browser cannot encrypt. Please use an up to date browser over https.": "Dieser Browser kann nicht verschlüsseln. Bitte einen aktuellen Browser über https verwenden.",
+	"This service needs JavaScript, because your entry is encrypted in your browser before it is sent.": "Dieser Dienst benötigt JavaScript, weil der Eintrag schon im Browser verschlüsselt wird, bevor er gesendet wird.",
+	"Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.": "Der Eintrag wird bereits im Browser verschlüsselt. Der Schlüssel steht nur im Link und wird nie an den Server übertragen — dort liegt ausschließlich Geheimtext, den der Server selbst nicht lesen kann. Nach dem ersten Abruf wird der Eintrag gelöscht.",
+	"Nach kopieren/senden Eingabe leeren": "Nach kopieren/senden Eingabe leeren",
+	"Lieber Bild senden?": "Lieber Bild senden?",
+	"Sende via Whatsapp": "Sende via Whatsapp",
+	"Sende via Telegram": "Sende via Telegram",
+	"Sende via Threema": "Sende via Threema"
 }

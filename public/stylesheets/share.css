@@ -1,0 +1,60 @@
+/* base.css contains the old HTML5 reset with "section { display: block }",
+   which overrides the browser default for the hidden attribute. Without this
+   rule a hidden <section> stays visible. */
+[hidden] {
+    display: none !important;
+}
+
+.share-button {
+    margin-right: 6px;
+    margin-bottom: 6px;
+}
+
+.share-button.whatsapp { border-color: #25d366; }
+.share-button.telegram { border-color: #29a9eb; }
+.share-button.threema  { border-color: #2a2a2a; }
+
+.checkbox-label {
+    display: inline-block;
+    font-weight: normal;
+    margin-right: 4px;
+}
+
+.counter {
+    font-family: Courier, monospace;
+    font-size: 12px;
+    text-align: right;
+    width: 95%;
+    margin-bottom: 8px;
+}
+
+.counter.warning {
+    color: #f00;
+}
+
+.error {
+    color: #a00;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+/* replaces the former inline style attributes, which a strict
+   Content-Security-Policy (style-src 'self') blocks */
+.wide {
+    width: 95%;
+}
+
+.field {
+    width: 95%;
+    margin-bottom: 0;
+}
+
+.pull-right {
+    float: right;
+}
+
+.faq-toggle {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    text-decoration: underline;
+}

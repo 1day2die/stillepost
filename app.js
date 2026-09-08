@@ -4,11 +4,13 @@
  */
 const express = require('express')
     , routes = require('./routes')
+    , api = require('./routes/api')
     , http = require('http')
     , path = require('path')
     , fs = require('fs')
     , Umzug = require('umzug')
     , cron = require('node-cron')
+    , rateLimit = require('express-rate-limit')
     , Datastore = require('@seald-io/nedb');
 
 const app = express();
@@ -32,10 +34,44 @@ app.use(i18n.init);
 app.set('port', process.env.PORT || 3300);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false, limit: '64kb' }));
-app.enable('trust proxy');
-app.disable( 'x-powered-by' )
+// only trust forwarding headers from the reverse proxy, otherwise any client
+// can spoof its address and slip past the rate limits
+app.set('trust proxy', process.env.TRUST_PROXY || 'loopback');
+app.disable('x-powered-by');
+
+app.use(function securityHeaders(req, res, next) {
+    // a page can carry a decrypted secret, so it must never be stored anywhere
+    res.setHeader('Cache-Control', 'no-store');
+    // keeps the fragment (and with it the key) out of outgoing requests
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Content-Security-Policy', [
+        "default-src 'none'",
+        "script-src 'self'",
+        "style-src 'self'",
+        "img-src 'self'",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "form-action 'self'",
+        "base-uri 'none'",
+        "frame-ancestors 'none'"
+    ].join('; '));
+    if (req.secure) {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+    next();
+});
+
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: function (res) {
+        // Static assets carry no secrets, but stillepost.js does the actual
+        // encryption: a stale copy after a deploy would keep running old crypto
+        // code. "no-cache" still allows a cheap 304, it only forbids using a
+        // cached copy without asking.
+        res.setHeader('Cache-Control', 'no-cache');
+    }
+}));
 
 const nedb = new Datastore({filename: path.join(DATA_DIR, 'read2burn.db'), autoload: true});
 
@@ -50,22 +86,49 @@ i18n.configure({
     updateFiles: false
 });
 
+const limit = function (windowMinutes, max) {
+    return rateLimit({
+        windowMs: windowMinutes * 60 * 1000,
+        limit: max,
+        standardHeaders: 'draft-7',
+        legacyHeaders: false,
+        message: { error: 'rate_limited' }
+    });
+};
+
+const createLimiter = limit(15, 60);
+const readLimiter = limit(15, 300);
+
 app.get('/', routes.index);
-app.post('/', routes.index);
+// legacy links are submitted as a form post, see routes/legacy.js
+app.post('/', express.urlencoded({ extended: false, limit: '8kb' }), readLimiter, routes.index);
+
+app.post('/api/entries', createLimiter, express.json({ limit: '64kb' }), api.create);
+app.get('/api/entries/:id', readLimiter, api.peek);
+app.post('/api/entries/:id/burn', readLimiter, api.burn);
 
 // anything else: back to the form instead of an unhandled 404
 app.use(function (req, res) {
-    res.status(404).render('index', { url: '', secretUserMessage: '', error: undefined, found: false });
+    if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'not_found' });
+    res.status(404).render('index', {});
 });
 
 // last resort: make sure a failing request always gets an answer
 app.use(function (err, req, res, next) {
     if (res.headersSent) return next(err);
-    if (err && (err.type === 'entity.too.large' || err.status === 413)) {
-        return res.status(413).render('index', { url: '', secretUserMessage: '', error: 'ERR_TOO_LONG', found: false });
+
+    // body-parser reports malformed or oversized bodies with a 4xx status of
+    // its own; only anything else is a real server side failure worth logging
+    const status = err && Number(err.status || err.statusCode);
+    const clientError = status >= 400 && status < 500;
+    if (!clientError) {
+        console.error('Unhandled error while serving', req.method, req.path, '-', err && err.message);
     }
-    console.error('Unhandled error while serving', req.method, req.path, '-', err && err.message);
-    res.status(500).render('index', { url: '', secretUserMessage: '', error: 'ERR_INTERNAL', found: false });
+    const code = clientError ? status : 500;
+    const body = code === 413 ? 'too_large' : (clientError ? 'bad_request' : 'internal');
+
+    if (req.path.startsWith('/api/')) return res.status(code).json({ error: body });
+    res.status(code).render('index', {});
 });
 
 umzug.up().then(function (migrations) {

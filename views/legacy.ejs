@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+  Server rendered read page for links of the old scheme. Delete together with
+  routes/legacy.js once the last of those links has expired.
+-->
+<html lang="<%= getLocale() %>">
+<head>
+    <meta charset="utf-8">
+    <title>stille post</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+
+    <link rel="stylesheet" href="stylesheets/base.css">
+    <link rel="stylesheet" href="stylesheets/skeleton.css">
+    <link rel="stylesheet" href="stylesheets/layout.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/share.css">
+
+    <link rel="shortcut icon" href="images/favicon.ico">
+</head>
+<body>
+
+<div class="container">
+    <div class="sixteen columns">
+        <h1 class="title">Stille POST</h1>
+        <div class="subtitle">Sicher. Lokal. Einfach</div>
+    </div>
+    <div class="sixteen columns">
+        <% if (error == 'ERR_NO_SUCH_ENTRY') { %>
+            <p><em><%= __('No entry found!') %></em></p>
+            <p><em><strong><%= __('Either there is no such key or your entry has already been accessed by another one.') %></strong></em></p>
+            <a href="./"><button type="button"><%= __('Create new link') %></button></a>
+        <%} else if (error) { %>
+            <p><em><strong><%= __('Something went wrong. Please try again.') %></strong></em></p>
+            <a href="./"><button type="button"><%= __('Create new link') %></button></a>
+        <%} else if (secretUserMessage) { %>
+            <label for="result"><%= __('The entry:') %></label>
+            <textarea class="field" id="result" name="result" readonly><%= secretUserMessage %></textarea>
+            <p><em><%= __('Do not reload! Your entry has been deleted already.') %></em></p>
+            <a href="./"><button type="button"><%= __('Create new link') %></button></a>
+        <%} else {%>
+            <form action="./" method="post" autocomplete="off">
+                <p><%= __('You can access the secret message now. Please note that the message will be deleted!') %></p>
+                <input type="hidden" name="key" value="<%= key %>"/>
+                <input type="hidden" name="show" value="true"/>
+                <button type="submit"><%= __('Show secret') %></button>
+            </form>
+        <%}%>
+    </div>
+</div><!-- container -->
+
+</body>
+</html>

@@ -25,5 +25,14 @@
 	"Create new link": "Create new link",
 	"Either there is no such key or your entry has already been accessed by another one.": "Either there is no such key or your entry has already been accessed by another one.",
 	"The entry is too long.": "The entry is too long.",
-	"Something went wrong. Please try again.": "Something went wrong. Please try again."
+	"Something went wrong. Please try again.": "Something went wrong. Please try again.",
+	"The entry could not be decrypted. The link is incomplete or damaged.": "The entry could not be decrypted. The link is incomplete or damaged.",
+	"This browser cannot encrypt. Please use an up to date browser over https.": "This browser cannot encrypt. Please use an up to date browser over https.",
+	"This service needs JavaScript, because your entry is encrypted in your browser before it is sent.": "This service needs JavaScript, because your entry is encrypted in your browser before it is sent.",
+	"Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.": "Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.",
+	"Nach kopieren/senden Eingabe leeren": "Clear the input after copying or sending",
+	"Lieber Bild senden?": "Send an image instead?",
+	"Sende via Whatsapp": "Send via Whatsapp",
+	"Sende via Telegram": "Send via Telegram",
+	"Sende via Threema": "Send via Threema"
 }

@@ -15,11 +15,13 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 COPY app.js ./
+COPY lib ./lib
 COPY routes ./routes
 COPY views ./views
 COPY public ./public
 COPY locales ./locales
 COPY migrations ./migrations
+COPY LICENSE ./
 
 ####################
 # Create image
