@@ -4,7 +4,6 @@
 	"Either there is no such key or your entry has already been accessed by another one.": "Entweder existiert der Eintrag nicht oder auf den Eintrag wurde schon zugegriffen.",
 	"Text (password, secret, etc.):": "Text (Passwort, Geheimnis, etc.):",
 	"Create link": "Link erzeugen",
-	"Text available only once by this URL:": "Der Text ist nur EINMAL über diese URL verfügbar:",
 	"What is it all about?": "Warum das alles?",
 	"Sending secrets by email has some problems. First, the email is sent in clear text, everybody who can read the transmission can read the secret, second the email is stored in the email account of the sender and the recipient! read2burn.com enables a secure transmission by storing the secret encrypted and creating an access url that is valid only once. Therefore a manipulation by others will be recognized.": "Geheime Einträge (z.B. Passwörter) per Email zu versenden ist problematisch. Zum einen wird die Email i.d.R. unverschlüsselt übertragen, jeder der die Übertragung mitlesen kann, kann auch den geheimen Eintrag lesen. Außerdem werden Emails meist nicht gelöscht, sondern archiviert und das sogar beim Absender UND beim Empfänger! read2burn ermöglicht eine sicherere Übertragung indem der Eintrag verschlüsselt gespeichert wird und ein Link dafür erzeugt wird. Dieser Link ist nur einmal gültig. Dadurch kann erkannt werden, ob der Eintrag schon gelesen wurde. In diesem Fall muss davon ausgegangen werden, dass der Eintrag nicht mehr sicher ist.",
 	"Hints": "Hinweise",
@@ -21,7 +20,6 @@
 	"The entry could not be decrypted. The link is incomplete or damaged.": "Der Eintrag konnte nicht entschlüsselt werden. Der Link ist unvollständig oder beschädigt.",
 	"This browser cannot encrypt. Please use an up to date browser over https.": "Dieser Browser kann nicht verschlüsseln. Bitte einen aktuellen Browser über https verwenden.",
 	"This service needs JavaScript, because your entry is encrypted in your browser before it is sent.": "Dieser Dienst benötigt JavaScript, weil der Eintrag schon im Browser verschlüsselt wird, bevor er gesendet wird.",
-	"Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.": "Der Eintrag wird bereits im Browser verschlüsselt. Der Schlüssel steht nur im Link und wird nie an den Server übertragen — dort liegt ausschließlich Geheimtext, den der Server selbst nicht lesen kann. Nach dem ersten Abruf wird der Eintrag gelöscht.",
 	"Sende via Whatsapp": "Sende via Whatsapp",
 	"Sende via Telegram": "Sende via Telegram",
 	"Sende via Threema": "Sende via Threema",
@@ -30,11 +28,13 @@
 	"Nach dem Kopieren Eingabe leeren": "Nach dem Kopieren Eingabe leeren",
 	"How many times may the link be opened?": "Wie oft darf der Link geöffnet werden?",
 	"Please enter a number between 1 and 20.": "Bitte eine Zahl zwischen 1 und 20 eingeben.",
-	"The link can be opened {n} times.": "Der Link kann {n} mal geöffnet werden.",
 	"This entry can be opened one more time after this one.": "Nach diesem Zugriff kann der Eintrag noch einmal geöffnet werden.",
 	"This entry can be opened {n} more times after this one.": "Nach diesem Zugriff kann der Eintrag noch {n} mal geöffnet werden.",
 	"This is the last access, the entry will be deleted.": "Dies ist der letzte Zugriff, der Eintrag wird danach gelöscht.",
 	"The entry can be opened one more time.": "Der Eintrag kann noch einmal geöffnet werden.",
 	"The entry can be opened {n} more times.": "Der Eintrag kann noch {n} mal geöffnet werden.",
-	"The link expires after {{hours}} hours.": "Der Link verfällt nach {{hours}} Stunden."
+	"Stille Post is end-to-end encrypted. Your entry is encrypted in your browser with AES-256-GCM before anything is sent. The key exists only in the part of the link after the # sign, and browsers never transmit that part to a server. What is stored is therefore ciphertext that neither the operator nor anyone with access to the database, the backups or the logs can read. The entry is deleted as soon as it has been opened as often as you allowed, and after {{hours}} hours at the latest.": "Stille Post ist Ende-zu-Ende-verschlüsselt. Der Eintrag wird bereits im Browser mit AES-256-GCM verschlüsselt, bevor irgendetwas gesendet wird. Der Schlüssel steht ausschließlich in dem Teil des Links hinter dem #-Zeichen, und diesen Teil überträgt kein Browser jemals an einen Server. Gespeichert wird deshalb nur Geheimtext, den weder der Betreiber noch jemand mit Zugriff auf die Datenbank, die Backups oder die Protokolle lesen kann. Gelöscht wird der Eintrag, sobald er so oft geöffnet wurde wie erlaubt, spätestens aber nach {{hours}} Stunden.",
+	"The entry is available at this URL:": "Der Eintrag ist über diese URL verfügbar:",
+	"The link can be opened once and expires after {{hours}} hours.": "Der Link kann einmal geöffnet werden und verfällt nach {{hours}} Stunden.",
+	"The link can be opened {n} times and expires after {{hours}} hours.": "Der Link kann {n} mal geöffnet werden und verfällt nach {{hours}} Stunden."
 }

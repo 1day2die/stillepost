@@ -199,13 +199,9 @@
 				currentLink = buildLink(id, encrypted.key);
 				el('url').value = currentLink;
 
-				var note = el('views-note');
-				if (views > 1) {
-					note.textContent = message('link-views-many').replace('{n}', views);
-					show(note);
-				} else {
-					hide(note);
-				}
+				// one sentence covering both the number of accesses and the
+				// deadline, so nothing can contradict itself
+				el('views-note').textContent = countMessage('validity', views);
 
 				// the plain text has served its purpose, do not leave it on screen
 				input.value = '';

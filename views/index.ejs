@@ -52,7 +52,8 @@
          data-msg-too-long="<%= __('The entry is too long.') %>"
          data-msg-crypto-unavailable="<%= __('This browser cannot encrypt. Please use an up to date browser over https.') %>"
          data-msg-invalid-views="<%= __('Please enter a number between 1 and 20.') %>"
-         data-msg-link-views-many="<%= __('The link can be opened {n} times.') %>"
+         data-msg-validity-one="<%= __('The link can be opened once and expires after {{hours}} hours.', { hours: entryTtlHours }) %>"
+         data-msg-validity-many="<%= __('The link can be opened {n} times and expires after {{hours}} hours.', { hours: entryTtlHours }) %>"
          data-msg-views-left-one="<%= __('This entry can be opened one more time after this one.') %>"
          data-msg-views-left-many="<%= __('This entry can be opened {n} more times after this one.') %>"
          data-msg-views-last="<%= __('This is the last access, the entry will be deleted.') %>"
@@ -82,9 +83,8 @@
             </form>
 
             <div id="result" hidden>
-                <label for="url"><%= __('Text available only once by this URL:') %></label>
-                <p id="views-note" class="views-note" hidden></p>
-                <p class="views-note"><%= __('The link expires after {{hours}} hours.', { hours: entryTtlHours }) %></p>
+                <label for="url"><%= __('The entry is available at this URL:') %></label>
+                <p id="views-note" class="views-note"></p>
                 <input class="wide" type="text" id="url" name="url" readonly/>
                 <div class="checkbox-label">
                     <input type="checkbox" id="copydelete" name="copydelete" value="true" checked>
@@ -121,7 +121,7 @@
         <div class="sixteen columns"><h6><%= __('HOW-TO-TITLE') %></h6><p><%= __('HOW-TO-MESSAGE', { hours: entryTtlHours }) %></p></div>
         <div class="sixteen columns"><h6><%= __('What is it all about?') %></h6><p><%= __('Sending secrets by email has some problems. First, the email is sent in clear text, everybody who can read the transmission can read the secret, second the email is stored in the email account of the sender and the recipient! read2burn.com enables a secure transmission by storing the secret encrypted and creating an access url that is valid only once. Therefore a manipulation by others will be recognized.') %></p></div>
         <div class="sixteen columns"><h6><%= __('Hints') %></h6><p><%= __('Never encrypt login and password together.') %><br/><%= __('Send login and password always separately.') %></p></div>
-        <div class="sixteen columns"><h6><%= __('Your data is safe!') %></h6><p><%= __('Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.') %></p></div>
+        <div class="sixteen columns"><h6><%= __('Your data is safe!') %></h6><p><%= __('Stille Post is end-to-end encrypted. Your entry is encrypted in your browser with AES-256-GCM before anything is sent. The key exists only in the part of the link after the # sign, and browsers never transmit that part to a server. What is stored is therefore ciphertext that neither the operator nor anyone with access to the database, the backups or the logs can read. The entry is deleted as soon as it has been opened as often as you allowed, and after {{hours}} hours at the latest.', { hours: entryTtlHours }) %></p></div>
         <div class="sixteen columns"><h6><p> Dies ist eine OpenSource software von WeMove. Der Code wurde angepasst um Tracker zu entfernen</p></div>
     </div>
 </div><!-- container -->

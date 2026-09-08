@@ -12,7 +12,6 @@
 	"Never encrypt login and password together.": "Never encrypt login and password together.",
 	"Send login and password always separately.": "Send login and password always separately.",
 	"Your data is safe!": "Your data is safe!",
-	"Text available only once by this URL:": "Text available only once by this URL:",
 	"You can access the secret message now. Please note that the message will be deleted!": "You can access the secret message now. Please note that the message will be deleted!",
 	"Show secret": "Show secret",
 	"The entry:": "The entry:",
@@ -24,7 +23,6 @@
 	"The entry could not be decrypted. The link is incomplete or damaged.": "The entry could not be decrypted. The link is incomplete or damaged.",
 	"This browser cannot encrypt. Please use an up to date browser over https.": "This browser cannot encrypt. Please use an up to date browser over https.",
 	"This service needs JavaScript, because your entry is encrypted in your browser before it is sent.": "This service needs JavaScript, because your entry is encrypted in your browser before it is sent.",
-	"Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.": "Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.",
 	"Sende via Whatsapp": "Send via Whatsapp",
 	"Sende via Telegram": "Send via Telegram",
 	"Sende via Threema": "Send via Threema",
@@ -33,11 +31,13 @@
 	"Nach dem Kopieren Eingabe leeren": "Clear the input after copying",
 	"How many times may the link be opened?": "How many times may the link be opened?",
 	"Please enter a number between 1 and 20.": "Please enter a number between 1 and 20.",
-	"The link can be opened {n} times.": "The link can be opened {n} times.",
 	"This entry can be opened one more time after this one.": "After this access the entry can be opened one more time.",
 	"This entry can be opened {n} more times after this one.": "After this access the entry can be opened {n} more times.",
 	"This is the last access, the entry will be deleted.": "This is the last access, the entry will be deleted.",
 	"The entry can be opened one more time.": "The entry can be opened one more time.",
 	"The entry can be opened {n} more times.": "The entry can be opened {n} more times.",
-	"The link expires after {{hours}} hours.": "The link expires after {{hours}} hours."
+	"Stille Post is end-to-end encrypted. Your entry is encrypted in your browser with AES-256-GCM before anything is sent. The key exists only in the part of the link after the # sign, and browsers never transmit that part to a server. What is stored is therefore ciphertext that neither the operator nor anyone with access to the database, the backups or the logs can read. The entry is deleted as soon as it has been opened as often as you allowed, and after {{hours}} hours at the latest.": "Stille Post is end-to-end encrypted. Your entry is encrypted in your browser with AES-256-GCM before anything is sent. The key exists only in the part of the link after the # sign, and browsers never transmit that part to a server. What is stored is therefore ciphertext that neither the operator nor anyone with access to the database, the backups or the logs can read. The entry is deleted as soon as it has been opened as often as you allowed, and after {{hours}} hours at the latest.",
+	"The entry is available at this URL:": "The entry is available at this URL:",
+	"The link can be opened once and expires after {{hours}} hours.": "The link can be opened once and expires after {{hours}} hours.",
+	"The link can be opened {n} times and expires after {{hours}} hours.": "The link can be opened {n} times and expires after {{hours}} hours."
 }
