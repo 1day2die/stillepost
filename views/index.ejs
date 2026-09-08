@@ -16,11 +16,11 @@
 
     <!-- CSS
   ================================================== -->
-    <link rel="stylesheet" href="stylesheets/base.css">
-    <link rel="stylesheet" href="stylesheets/skeleton.css">
-    <link rel="stylesheet" href="stylesheets/layout.css">
-    <link rel="stylesheet" href="stylesheets/style.css">
-    <link rel="stylesheet" href="stylesheets/share.css">
+    <link rel="stylesheet" href="stylesheets/base.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="stylesheets/skeleton.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="stylesheets/layout.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="stylesheets/style.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="stylesheets/share.css?v=<%= assetVersion %>">
 
     <!-- Favicons
     ================================================== -->
@@ -29,7 +29,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
 
-    <script src="javascripts/stillepost.js" defer></script>
+    <script src="javascripts/stillepost.js?v=<%= assetVersion %>" defer></script>
 
 </head>
 <body>
@@ -66,7 +66,6 @@
                     <textarea class="field" id="secretUserMessage" name="secretUserMessage"></textarea>
                     <div id="counter" class="counter"></div>
                     <button type="submit" id="create-button"><%= __('Create link') %></button>
-                    <a href="https://image.stillepost.online"><button type="button" class="pull-right"><%= __('Lieber Bild senden?') %></button></a>
                 </div>
             </form>
 
@@ -75,7 +74,7 @@
                 <input class="wide" type="text" id="url" name="url" readonly/>
                 <div class="checkbox-label">
                     <input type="checkbox" id="copydelete" name="copydelete" value="true" checked>
-                    <label class="checkbox-label" for="copydelete"><%= __('Nach kopieren/senden Eingabe leeren') %></label>
+                    <label class="checkbox-label" for="copydelete"><%= __('Nach dem Kopieren Eingabe leeren') %></label>
                 </div>
                 <br/>
                 <button type="button" class="copy" id="copy"><%= __('copy') %></button>

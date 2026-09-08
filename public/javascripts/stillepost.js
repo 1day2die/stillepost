@@ -228,8 +228,22 @@
 			var button = el('share-' + name);
 			if (!button) return;
 			button.addEventListener('click', function () {
-				window.open(targets[name] + encodeURIComponent(currentLink), '_blank');
-				afterShare();
+				if (!currentLink) return;
+				// Hand the link straight to the locally installed app. Opening a
+				// tab for this (window.open) leaves an empty about:blank tab
+				// behind whenever no handler is registered, and navigating the
+				// current page keeps that from happening.
+				//
+				// Deliberately NOT the https variants (wa.me, t.me/share,
+				// threema.id): those would send the link - and with it the
+				// decryption key - to the messenger's servers. A custom scheme
+				// is handled by the operating system and never leaves the device.
+				//
+				// The link is deliberately NOT cleared afterwards: there is no
+				// reliable way to tell whether the app actually opened, and
+				// clearing it after a silent failure would lose the entry for
+				// good, because the plain text is already gone from the form.
+				location.href = targets[name] + encodeURIComponent(currentLink);
 			});
 		});
 	}

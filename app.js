@@ -34,6 +34,9 @@ app.use(i18n.init);
 app.set('port', process.env.PORT || 3300);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+// appended to the asset urls: a deploy changes the url, so no browser and no
+// proxy can keep serving the previous stillepost.js with its crypto code
+app.locals.assetVersion = require('./package.json').version;
 // only trust forwarding headers from the reverse proxy, otherwise any client
 // can spoof its address and slip past the rate limits
 app.set('trust proxy', process.env.TRUST_PROXY || 'loopback');
