@@ -1,23 +1,23 @@
 {
   "name": "read2burn",
-  "version": "0.4.0",
+  "version": "0.6.2",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "bluebird": "^3.7.2",
-    "body-parser": "^1.20",
-    "dirty": "^1.1.0",
-    "ejs": "^3.0.1",
-    "express": "^4.18.2",
-    "extfs": "^0.0.7",
-    "i18n": "^0.8.5",
-    "mv": "^2.1.1",
-    "nedb": "^1.8.0",
-    "node-cron": "^2.0.3",
-    "rimraf": "^3.0.1",
-    "umzug": "^2.2.0"
+    "@seald-io/nedb": "^4.1.2",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "i18n": "^0.15.4",
+    "node-cron": "^4.6.0",
+    "umzug": "^2.3.0"
   },
   "description": "A tool for communicating secret information.",
   "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "devDependencies": {},
   "author": "wemove",
   "license": "MIT"

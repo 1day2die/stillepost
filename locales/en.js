@@ -23,5 +23,7 @@
 	"The entry:": "The entry:",
 	"Do not reload! Your entry has been deleted already.": "Do not reload! Your entry has been deleted already.",
 	"Create new link": "Create new link",
-	"Either there is no such key or your entry has already been accessed by another one.": "Either there is no such key or your entry has already been accessed by another one."
+	"Either there is no such key or your entry has already been accessed by another one.": "Either there is no such key or your entry has already been accessed by another one.",
+	"The entry is too long.": "The entry is too long.",
+	"Something went wrong. Please try again.": "Something went wrong. Please try again."
 }

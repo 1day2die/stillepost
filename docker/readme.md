@@ -1,20 +1,31 @@
 Build docker image
 
+The build context is the repository root, so that the image is built from this
+working copy (`-f docker/Dockerfile .`), not from a remote branch.
+
 ```
-git clone https://github.com/joachimmueller/read2burn.git .
-cd docker
-docker build --no-cache -t wemove/read2burn:<VERSION> .
+cd <repository root>
+docker build --no-cache -f docker/Dockerfile -t wemove/read2burn:<VERSION> .
 
 # push to wemove docker repository
 docker login docker-registry.wemove.com
 docker tag wemove/read2burn:<VERSION> docker-registry.wemove.com/wemove/read2burn:<VERSION>
-docker push docker-registry.wemove.com/wemove/read2burn:0.2
+docker push docker-registry.wemove.com/wemove/read2burn:<VERSION>
 ```
 
 Run the docker
 
 ```
-docker run --restart=always -d -p 3300:3300 --volume=/opt/read2burn/data:/app/data -e REL_PATH=<RELATIVE PATH, IE '/r2b'> --name read2burn wemove/read2burn:0.1
+docker run --restart=always -d -p 127.0.0.1:3300:3300 \
+  --volume=/opt/read2burn/data:/app/data \
+  --name read2burn wemove/read2burn:<VERSION>
+```
+
+The container runs as the unprivileged `node` user (uid 1000). A bind mounted
+data directory has to be writable by that uid:
+
+```
+mkdir -p /opt/read2burn/data && chown -R 1000:1000 /opt/read2burn/data
 ```
 
 Apache config for sub paths
@@ -29,3 +40,7 @@ Apache config for sub paths
             RequestHeader set X-Forwarded-Ssl on
     </Location>
 ---
+
+Note: the access URL currently carries the decryption key in the query string,
+so the reverse proxy will log it. Until that is changed, exclude the request
+line from the access log or disable logging for this vhost.

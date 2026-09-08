@@ -56,9 +56,15 @@
     </div>
     <div class="sixteen columns">
         <form action="./" method="post" autocomplete="off">
-            <% if (error=='ERR_NO_SUCH_ENTRY') { %>
-                <p><em><%= __('No entry found!') %></em></p>
-                <p><em><strong><%= __('Either there is no such key or your entry has already been accessed by another one.') %></strong></em></p>
+            <% if (error) { %>
+                <% if (error=='ERR_NO_SUCH_ENTRY') { %>
+                    <p><em><%= __('No entry found!') %></em></p>
+                    <p><em><strong><%= __('Either there is no such key or your entry has already been accessed by another one.') %></strong></em></p>
+                <%} else if (error=='ERR_TOO_LONG') { %>
+                    <p><em><strong><%= __('The entry is too long.') %></strong></em></p>
+                <%} else {%>
+                    <p><em><strong><%= __('Something went wrong. Please try again.') %></strong></em></p>
+                <%}%>
                 <button type="submit"><%= __('Create new link') %></button>
             <%} else {%>
                 <% if (found) { %>

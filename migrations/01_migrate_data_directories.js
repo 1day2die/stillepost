@@ -1,81 +1,71 @@
 'use strict';
 
-var Bluebird = require('bluebird');
-var fs = require('extfs');
-var rimraf = require('rimraf');
-var path = require('path');
-var mv = require('mv');
+const fs = require('fs');
+const path = require('path');
 const dir = path.resolve(__dirname, '../data');
+
+function isEmpty(target) {
+  return fs.readdirSync(target).length === 0;
+}
+
+function move(srcPath, dstPath) {
+  try {
+    fs.renameSync(srcPath, dstPath);
+  } catch (e) {
+    // rename fails across devices, fall back to copy + unlink
+    fs.cpSync(srcPath, dstPath, { recursive: true });
+    fs.rmSync(srcPath, { recursive: true, force: true });
+  }
+  console.log('Moved "' + srcPath + '" -> "' + dstPath + '"');
+}
 
 module.exports = {
   up: function () {
-    return new Bluebird(function (resolve, reject) {
+    return new Promise(function (resolve) {
       console.log("MIGRATION 01_migrate_data_directories.js: Migrating old long data directories to 3 character directories.");
-      // Describe how to achieve the task.
       // rename data directories to the 3 characters
+
+      if (!fs.existsSync(dir)) return resolve();
 
       fs.readdirSync(dir).forEach(it => {
         const itsPath = path.resolve(dir, it);
-        const itsStat = fs.statSync(itsPath);
 
+        if (!fs.statSync(itsPath).isDirectory()) return;
 
-        if (itsStat.isDirectory()) {
-          if (fs.isEmptySync(itsPath)) {
-            rimraf(itsPath, function () {
-              console.log('Removed empty directory:  ' + itsPath);
-            });
-          } else {
-            var lastPath = path.basename(itsPath);
-            if (lastPath.length > 3) {
-              var shortendPath = itsPath.replace(lastPath, lastPath.substr(0, 3));
-              if (fs.existsSync(shortendPath)) {
-                // Move all file to shortend path
-                fs.readdirSync(itsPath).forEach(it => {
-                  var srcPath = path.resolve(itsPath, it);
-                  var dstPath = path.join(shortendPath, path.basename(srcPath));
-                  if (fs.existsSync(dstPath)) {
-                    console.warn("File '" + dstPath + "' exists. Overwriting it!")
-                  }
-                  mv(srcPath, dstPath, function (err) {
-                    console.log('Moved file "' + srcPath + '" -> "' + dstPath + '"');
+        if (isEmpty(itsPath)) {
+          fs.rmSync(itsPath, { recursive: true, force: true });
+          console.log('Removed empty directory:  ' + itsPath);
+          return;
+        }
 
-                    // done. it tried fs.rename first, and then falls back to
-                    // piping the source file to the dest file and then unlinking
-                    // the source file.
-                    if (err) console.log(err);
-                  });
+        const lastPath = path.basename(itsPath);
+        if (lastPath.length <= 3) return;
 
-                });
-                if (fs.isEmptySync(itsPath)) {
-                  rimraf(itsPath, function () {
-                    console.log('Removed empty directory:  ' + itsPath);
-                  });
-                }
-              } else {
-                mv(itsPath, shortendPath, function (err) {
-                  // done. it tried fs.rename first, and then falls back to
-                  // piping the source file to the dest file and then unlinking
-                  // the source file.
-                  console.log('Moved directory "' + itsPath + '" -> "' + shortendPath + '"');
-                  if (err) console.log(err);
-                });
-              }
-
+        const shortendPath = itsPath.replace(lastPath, lastPath.substr(0, 3));
+        if (fs.existsSync(shortendPath)) {
+          // Move all files to shortend path
+          fs.readdirSync(itsPath).forEach(it => {
+            const srcPath = path.resolve(itsPath, it);
+            const dstPath = path.join(shortendPath, path.basename(srcPath));
+            if (fs.existsSync(dstPath)) {
+              console.warn("File '" + dstPath + "' exists. Overwriting it!");
             }
+            move(srcPath, dstPath);
+          });
+          if (isEmpty(itsPath)) {
+            fs.rmSync(itsPath, { recursive: true, force: true });
+            console.log('Removed empty directory:  ' + itsPath);
           }
+        } else {
+          move(itsPath, shortendPath);
         }
       });
-      // Call resolve/reject at some point.
+
       resolve();
     });
   },
 
   down: function () {
-    return new Bluebird(function (resolve, reject) {
-      console.log("01_migrate_data_directories.js:down")
-      // Describe how to revert the task.
-      // Call resolve/reject at some point.
-      reject();
-    });
+    return Promise.reject(new Error('01_migrate_data_directories.js cannot be reverted'));
   }
 };

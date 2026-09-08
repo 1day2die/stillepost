@@ -20,5 +20,7 @@
 	"Do not reload! Your entry has been deleted already.": "Bitte die Seite nicht neu laden! Der Eintrag wurde gelöscht.",
 	"You can access the secret message now. Please note that the message will be deleted!": "Sie können nun auf den Eintrag zugreifen. Bitte beachten Sie, dass der Eintrag dadurch gelöscht wird.",
 	"Show secret": "Show secret",
-	"copy": "Kopieren"
+	"copy": "Kopieren",
+	"The entry is too long.": "Der Eintrag ist zu lang.",
+	"Something went wrong. Please try again.": "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
 }
