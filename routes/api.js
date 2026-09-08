@@ -20,6 +20,13 @@ const MAX_VIEWS = 20;
 // marks entries of the end to end encrypted scheme, see routes/legacy.js
 const SCHEME_VERSION = 2;
 
+// An entry is only alive while it is within its time to live. Applying this on
+// every read makes the deadline a hard guarantee: even if the cleanup job never
+// ran, an expired entry cannot be opened any more.
+function liveEntry(id) {
+	return { key: id, v: SCHEME_VERSION, remaining: { $gt: 0 }, timestamp: { $gt: Date.now() - app.ENTRY_TTL_MS } };
+}
+
 function generateUniqueId(attempt, callback) {
 	const id = crypto.randomBytes(ID_BYTES).toString('hex');
 	app.nedb.findOne({ key: id }, function (err, doc) {
@@ -78,7 +85,7 @@ exports.peek = function (req, res) {
 	const id = req.params.id;
 	if (!ID_PATTERN.test(id)) return res.status(404).json({ error: 'not_found' });
 
-	app.nedb.findOne({ key: id, v: SCHEME_VERSION, remaining: { $gt: 0 } }, function (err, doc) {
+	app.nedb.findOne(liveEntry(id), function (err, doc) {
 		if (err) {
 			console.error('Could not look up the entry:', err.message);
 			return res.status(500).json({ error: 'internal' });
@@ -97,7 +104,7 @@ exports.burn = function (req, res) {
 	// readers exactly as many succeed as there were views left - nobody can
 	// slip through by racing.
 	app.nedb.update(
-		{ key: id, v: SCHEME_VERSION, remaining: { $gt: 0 } },
+		liveEntry(id),
 		{ $inc: { remaining: -1 } },
 		{ returnUpdatedDocs: true },
 		function (err, numAffected, doc) {

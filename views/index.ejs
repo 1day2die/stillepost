@@ -84,6 +84,7 @@
             <div id="result" hidden>
                 <label for="url"><%= __('Text available only once by this URL:') %></label>
                 <p id="views-note" class="views-note" hidden></p>
+                <p class="views-note"><%= __('The link expires after {{hours}} hours.', { hours: entryTtlHours }) %></p>
                 <input class="wide" type="text" id="url" name="url" readonly/>
                 <div class="checkbox-label">
                     <input type="checkbox" id="copydelete" name="copydelete" value="true" checked>
@@ -117,7 +118,7 @@
         <h5 id="faq" class="faq-toggle"><a href="#">INFO</a></h5>
     </div>
     <div id="faqContainer" hidden>
-        <div class="sixteen columns"><h6><%= __('HOW-TO-TITLE') %></h6><p><%= __('HOW-TO-MESSAGE') %></p></div>
+        <div class="sixteen columns"><h6><%= __('HOW-TO-TITLE') %></h6><p><%= __('HOW-TO-MESSAGE', { hours: entryTtlHours }) %></p></div>
         <div class="sixteen columns"><h6><%= __('What is it all about?') %></h6><p><%= __('Sending secrets by email has some problems. First, the email is sent in clear text, everybody who can read the transmission can read the secret, second the email is stored in the email account of the sender and the recipient! read2burn.com enables a secure transmission by storing the secret encrypted and creating an access url that is valid only once. Therefore a manipulation by others will be recognized.') %></p></div>
         <div class="sixteen columns"><h6><%= __('Hints') %></h6><p><%= __('Never encrypt login and password together.') %><br/><%= __('Send login and password always separately.') %></p></div>
         <div class="sixteen columns"><h6><%= __('Your data is safe!') %></h6><p><%= __('Your entry is encrypted in your browser. The key is only part of the link and is never sent to the server, so the server stores nothing but ciphertext it cannot read. After the entry has been accessed once it is deleted.') %></p></div>

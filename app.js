@@ -21,6 +21,12 @@ const i18n = require("i18n");
 const DATA_DIR = path.join(__dirname, 'data');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
+// How long an entry may live at the most. The guarantee does not rest on the
+// cleanup job below: every read filters expired entries out as well, so an
+// entry stays unreadable even if the job never got to run.
+const ENTRY_TTL_HOURS = Number(process.env.ENTRY_TTL_HOURS) || 24;
+const ENTRY_TTL_MS = ENTRY_TTL_HOURS * 60 * 60 * 1000;
+
 const umzug = new Umzug({
     storage: 'json',
     // keep the migration state next to the data it describes, so it survives
@@ -37,6 +43,7 @@ app.set('view engine', 'ejs');
 // appended to the asset urls: a deploy changes the url, so no browser and no
 // proxy can keep serving the previous stillepost.js with its crypto code
 app.locals.assetVersion = require('./package.json').version;
+app.locals.entryTtlHours = ENTRY_TTL_HOURS;
 // only trust forwarding headers from the reverse proxy, otherwise any client
 // can spoof its address and slip past the rate limits
 app.set('trust proxy', process.env.TRUST_PROXY || 'loopback');
@@ -80,6 +87,7 @@ const nedb = new Datastore({filename: path.join(DATA_DIR, 'read2burn.db'), autol
 
 module.exports.nedb = nedb;
 module.exports.DATA_DIR = DATA_DIR;
+module.exports.ENTRY_TTL_MS = ENTRY_TTL_MS;
 
 i18n.configure({
     locales: ['en', 'de'],
@@ -149,16 +157,25 @@ server.listen(app.get('port'), function () {
     console.log("Express server listening on port " + app.get('port'));
 });
 
-// schedule regular cleanup
-cron.schedule('12 1 * * *', function () {
-    console.log("Cleanup proceeding...")
-    const expireTime = new Date().getTime() - 8640000000;
-    nedb.remove({timestamp: {$lte: expireTime}}, { multi: true }, function(err, numDeleted) {
+// Remove what has expired. Runs often enough that an entry is gone shortly
+// after its deadline rather than at some point the next day, and once at
+// startup so that a downtime across a scheduled run is caught up immediately.
+function removeExpiredEntries(reason) {
+    const expireTime = Date.now() - ENTRY_TTL_MS;
+    nedb.remove({ timestamp: { $lte: expireTime } }, { multi: true }, function (err, numDeleted) {
         if (err) {
             console.error('Cleanup failed:', err);
             return;
         }
-        console.log('Deleted', numDeleted, 'entries');
-        nedb.compactDatafile();
+        if (numDeleted > 0) {
+            console.log(`Cleanup (${reason}): deleted ${numDeleted} expired entries`);
+            nedb.compactDatafile();
+        }
     });
+}
+
+cron.schedule('*/15 * * * *', function () {
+    removeExpiredEntries('scheduled');
 });
+
+removeExpiredEntries('startup');

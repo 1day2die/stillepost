@@ -39,7 +39,9 @@ exports.read = function (req, res) {
 
 	// entries of the current scheme carry a version marker and must not be
 	// served through this path
-	app.nedb.findOne({ key, v: { $exists: false } }, function (err, doc) {
+	app.nedb.findOne(
+		{ key, v: { $exists: false }, timestamp: { $gt: Date.now() - app.ENTRY_TTL_MS } },
+		function (err, doc) {
 		if (err) {
 			console.error('Could not look up the legacy entry:', err.message);
 			return render(500, { error: 'ERR_INTERNAL' });

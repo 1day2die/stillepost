@@ -54,12 +54,20 @@ Start the application.
 Configuration
 =============
 
-| Variable      | Default    | Meaning                                        |
-|---------------|------------|------------------------------------------------|
-| `PORT`        | `3300`     | port to listen on                              |
-| `TRUST_PROXY` | `loopback` | which proxy addresses may set forwarding headers |
+| Variable           | Default    | Meaning                                          |
+|--------------------|------------|--------------------------------------------------|
+| `PORT`             | `3300`     | port to listen on                                |
+| `TRUST_PROXY`      | `loopback` | which proxy addresses may set forwarding headers |
+| `ENTRY_TTL_HOURS`  | `24`       | how long an entry may live at the most           |
 
-Entries expire after 100 days; a daily job removes them.
+Entries expire after `ENTRY_TTL_HOURS`. The deadline is enforced on every read,
+so an expired entry cannot be opened even if the cleanup never ran. A job
+removes expired entries every 15 minutes and once at startup, so a downtime
+across a scheduled run is caught up.
+
+Do not delete `data/read2burn.db` from the outside to clear entries: nedb keeps
+its data in memory and writes the file back on the next compaction, so the
+entries come back.
 
 Links created before the switch to browser side encryption carry their key in
 the query string and are still readable through `routes/legacy.js`. That file,
